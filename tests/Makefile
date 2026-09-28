@@ -3,7 +3,7 @@ ALL=test-base64 test-md4 test-milenage \
 	test-sha1 \
 	test-https test-https_server \
 	test-sha256 test-aes test-x509v3 test-list test-rc4 \
-	test-bss
+	test-bss test-driver_test
 
 include ../src/build.rules
 
@@ -94,6 +94,7 @@ WPA_LIBS = $(SRC)/common/libcommon.a
 CFLAGS += -I$(SRC) -I$(SRC)/utils -I$(WPAS_SRC)
 
 CFLAGS += -DCONFIG_DRIVER_NONE
+CFLAGS += -DCONFIG_DRIVER_TEST
 CFLAGS += -DIEEE8021X_EAPOL
 
 WPA_OBJS = $(WPAS_SRC)/bssid_ignore.o
@@ -123,6 +124,7 @@ WPA_OBJS += $(SRC)/eap_peer/eap.o
 WPA_OBJS += $(SRC)/eap_peer/eap_methods.o
 WPA_OBJS += $(SRC)/drivers/driver_common.o
 WPA_OBJS += $(SRC)/drivers/driver_none.o
+WPA_OBJS += $(SRC)/drivers/driver_test.o
 WPA_OBJS += $(SRC)/drivers/drivers.o
 WPA_OBJS += $(SRC)/l2_packet/l2_packet_none.o
 
@@ -142,6 +144,11 @@ CFLAGS_test-bss=$(WPA_CFLAGS)
 OBJS_test-bss=$(WPA_OBJS)
 include test.mk
 
+TEST=test-driver_test
+CFLAGS_test-driver_test=$(WPA_CFLAGS)
+OBJS_test-driver_test=$(WPA_OBJS)
+include test.mk
+
 run-tests: $(ALL)
 	./test-aes
 	./test-list
@@ -151,6 +158,7 @@ run-tests: $(ALL)
 	./test-sha1
 	./test-sha256
 	./test-bss
+	./test-driver_test
 	@echo
 	@echo All tests completed successfully.
 
