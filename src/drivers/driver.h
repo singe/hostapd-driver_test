@@ -2576,6 +2576,11 @@ struct wpa_driver_capa {
 #define WPA_DRIVER_FLAGS2_PMKSA_PRIVACY		0x0000001000000000ULL
 /** Driver supports MAC address filter for remain-on-channel */
 #define WPA_DRIVER_FLAGS2_ROC_ADDR_FILTER	0x0000002000000000ULL
+/** Driver interface has no kernel network device; EAPOL/control port frames
+ * are exchanged only through the driver interface (tx_control_port() and
+ * EVENT_EAPOL_RX) and l2_packet sockets must not be opened on the interface.
+ * Used by the user space test driver (driver_test.c). */
+#define WPA_DRIVER_FLAGS2_NO_NETDEV		0x0000004000000000ULL
 	u64 flags2;
 
 #define FULL_AP_CLIENT_STATE_SUPP(drv_flags) \
@@ -7953,5 +7958,8 @@ extern const struct wpa_driver_ops wpa_driver_roboswitch_ops;
 #ifdef CONFIG_DRIVER_NONE
 extern const struct wpa_driver_ops wpa_driver_none_ops; /* driver_none.c */
 #endif /* CONFIG_DRIVER_NONE */
+#ifdef CONFIG_DRIVER_TEST
+extern const struct wpa_driver_ops wpa_driver_test_ops; /* driver_test.c */
+#endif /* CONFIG_DRIVER_TEST */
 
 #endif /* DRIVER_H */

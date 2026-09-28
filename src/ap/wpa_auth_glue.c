@@ -1920,12 +1920,20 @@ int hostapd_setup_wpa(struct hostapd_data *hapd)
 
 		ft_iface = hapd->conf->bridge[0] ? hapd->conf->bridge :
 			   hapd->conf->iface;
-		hapd->l2 = l2_packet_init(ft_iface, NULL, ETH_P_RRB,
-					  hostapd_rrb_receive, hapd, 1);
-		if (!hapd->l2) {
-			wpa_printf(MSG_ERROR, "Failed to open l2_packet "
-				   "interface");
-			return -1;
+		if (hapd->iface->drv_flags2 & WPA_DRIVER_FLAGS2_NO_NETDEV) {
+			/* No kernel netdev: RRB frames can be exchanged only
+			 * with other BSSes within this process
+			 * (hostapd_wpa_auth_ft_iter()). */
+			wpa_printf(MSG_DEBUG,
+				   "FT: Driver has no netdev - RRB limited to local BSSes");
+		} else {
+			hapd->l2 = l2_packet_init(ft_iface, NULL, ETH_P_RRB,
+						  hostapd_rrb_receive, hapd, 1);
+			if (!hapd->l2) {
+				wpa_printf(MSG_ERROR, "Failed to open l2_packet "
+					   "interface");
+				return -1;
+			}
 		}
 
 		if (hostapd_wpa_register_ft_oui(hapd, ft_iface)) {

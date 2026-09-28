@@ -117,11 +117,17 @@ eth_p_oui_register(struct hostapd_data *hapd, const char *ifname, u8 oui_suffix,
 			goto err;
 
 		os_strlcpy(iface->ifname, ifname, sizeof(iface->ifname));
-		iface->l2 = l2_packet_init(ifname, NULL, ETH_P_OUI, eth_p_rx,
-					   iface, 1);
-		if (!iface->l2) {
-			os_free(iface);
-			goto err;
+		if (hapd->iface->drv_flags2 & WPA_DRIVER_FLAGS2_NO_NETDEV) {
+			/* No kernel netdev: only in-process delivery
+			 * (eth_p_oui_deliver()) is possible. */
+			iface->l2 = NULL;
+		} else {
+			iface->l2 = l2_packet_init(ifname, NULL, ETH_P_OUI,
+						   eth_p_rx, iface, 1);
+			if (!iface->l2) {
+				os_free(iface);
+				goto err;
+			}
 		}
 		dl_list_init(&iface->receiver);
 
@@ -166,6 +172,9 @@ int eth_p_oui_send(struct eth_p_oui_ctx *ctx, const u8 *src_addr,
 	size_t packet_len;
 	int ret;
 	struct l2_ethhdr *ethhdr;
+
+	if (!iface->l2)
+		return -1;
 
 	packet_len = sizeof(*ethhdr) + sizeof(global_oui) + 1 + len;
 	packet = os_zalloc(packet_len);

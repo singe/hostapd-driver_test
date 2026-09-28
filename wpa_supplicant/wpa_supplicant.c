@@ -6426,6 +6426,7 @@ int wpa_supplicant_update_mac_addr(struct wpa_supplicant *wpa_s)
 	if ((!wpa_s->p2p_mgmt ||
 	     !(wpa_s->drv_flags & WPA_DRIVER_FLAGS_DEDICATED_P2P_DEVICE)) &&
 	    !(wpa_s->drv_flags & WPA_DRIVER_FLAGS_P2P_DEDICATED_INTERFACE) &&
+	    !(wpa_s->drv_flags2 & WPA_DRIVER_FLAGS2_NO_NETDEV) &&
 	    !wpa_s->nan_mgmt) {
 		l2_packet_deinit(wpa_s->l2);
 		wpa_s->l2 = l2_packet_init(wpa_s->ifname,
@@ -8148,7 +8149,11 @@ static int wpa_supplicant_init_iface(struct wpa_supplicant *wpa_s,
 		return -1;
 
 #ifdef CONFIG_TDLS
-	if (!iface->p2p_mgmt && !iface->nan_mgmt && wpa_tdls_init(wpa_s->wpa))
+	/* TDLS needs an l2_packet socket for the encapsulated Data frames and
+	 * is not available on a driver interface without a netdev. */
+	if (!iface->p2p_mgmt && !iface->nan_mgmt &&
+	    !(wpa_s->drv_flags2 & WPA_DRIVER_FLAGS2_NO_NETDEV) &&
+	    wpa_tdls_init(wpa_s->wpa))
 		return -1;
 #endif /* CONFIG_TDLS */
 
