@@ -3,6 +3,7 @@
 
 [ \ref eapol_test "eapol_test" |
 \ref preauth_test "preauth_test" |
+\ref driver_test "driver_test" |
 \ref unit_tests "Unit tests" |
 \ref wpa_trace "Tracing code" ]
 
@@ -109,6 +110,166 @@ would use network configuration from test.conf to try to complete
 pre-authentication with AP using BSSID 02:11:22:33:44:55. The
 pre-authentication packets would be sent using the eth0 interface.
 
+
+\section driver_test driver_test - user space test driver for hostapd and wpa_supplicant
+
+%wpa_supplicant and hostapd use the \ref driver_wrapper "driver interface
+API" to talk to the WLAN driver. driver_test.c implements that API without
+any kernel driver, cfg80211/mac80211, or WLAN hardware: management frames
+and EAPOL frames are exchanged between hostapd (driver=test) and
+%wpa_supplicant (-Dtest) instances through a local UNIX domain datagram
+socket (or a loopback UDP socket). Since the same driver API is used as with
+real drivers, the complete protocol implementation (IEEE 802.11
+authentication/association state machines in hostapd, SME in
+%wpa_supplicant, RSN/EAPOL/EAP/RADIUS, FT, SAE, OWE, FILS, PMF, MLO) is
+exercised; only the driver_*.c layer itself is replaced by the test
+transport.
+
+The test driver is enabled with the following line in .config of both
+hostapd and %wpa_supplicant:
+
+\verbatim
+CONFIG_DRIVER_TEST=y
+\endverbatim
+
+\subsection driver_test_design Design
+
+hostapd sees the test driver as a mac80211-like driver with AP MLME in
+hostapd: received management frames are delivered with EVENT_RX_MGMT,
+hostapd transmits frames with send_mlme() and receives asynchronous
+EVENT_TX_STATUS, stations are tracked with sta_add()/sta_remove(),
+keys with set_key(), and EAPOL frames use hapd_send_eapol() and
+EVENT_EAPOL_RX. %wpa_supplicant sees a driver with WPA_DRIVER_FLAGS_SME:
+scan2() sends Probe Request frames and collects Probe Response frames
+into scan results, authenticate() and associate() build and send the
+corresponding management frames, and EVENT_AUTH/EVENT_ASSOC/
+EVENT_ASSOC_REJECT/EVENT_DEAUTH/EVENT_DISASSOC/EVENT_AUTH_TIMED_OUT/
+EVENT_ASSOC_TIMED_OUT are generated from the received frames and
+deterministic timers. EAPOL frames use the control port operations
+(WPA_DRIVER_FLAGS_CONTROL_PORT and WPA_DRIVER_FLAGS2_CONTROL_PORT_RX).
+
+Because there is no kernel network device, the driver reports
+WPA_DRIVER_FLAGS2_NO_NETDEV. %wpa_supplicant and hostapd then skip the
+l2_packet sockets that would normally be opened on the interface name
+(EAPOL, TDLS, FT RRB, ETH_P_OUI); FT RRB messages are still delivered
+between BSSes within the same hostapd process.
+
+Every datagram uses a 16-octet versioned header (see
+src/drivers/driver_test.h): magic "HTD1", version, message type
+(management frame, EAPOL frame, or liveness probe), flags (protected
+frame, no-ack), MLD link ID, the sender's operating frequency, the
+payload length, and a sequence counter. Datagrams with an invalid header
+or a payload length that does not match the datagram length are dropped
+and counted; the counters are available with the STATUS-DRIVER control
+interface command. Peer tables, scan result storage, template copies and
+element buffers are bounded. Sockets are non-blocking so that a slow or
+malicious peer cannot stall hostapd or %wpa_supplicant.
+
+Key material is not stored by the test driver and frames are never
+encrypted. The driver does, however, track which keys have been
+configured and emulates the protected/unprotected distinction of
+robust management frames (deauthentication, disassociation, robust
+Action frames): frames transmitted while a pairwise key exists are marked
+protected, unprotected robust frames from a peer with which management
+frame protection has been negotiated are dropped, and frames marked
+protected without a matching key are dropped. This allows PMF and SA
+Query paths to be exercised.
+
+\subsection driver_test_params Driver parameters
+
+hostapd: driver_params=&lt;params&gt; in the configuration file;
+%wpa_supplicant: driver_param=&lt;params&gt; in the configuration file or
+-p &lt;params&gt; on the command line. Parameters are space separated.
+
+- test_socket=&lt;path&gt;: hostapd binds a UNIX datagram socket at path;
+  %wpa_supplicant sends to that path and binds STA-&lt;ifname&gt; in the
+  same directory.
+- test_dir=&lt;dir&gt;: hostapd binds &lt;dir&gt;/AP-&lt;ifname&gt;;
+  %wpa_supplicant binds &lt;dir&gt;/STA-&lt;ifname&gt; and discovers every
+  AP-* socket in the directory when scanning (multiple APs).
+- test_udp=&lt;port&gt;: hostapd binds 127.0.0.1:port; %wpa_supplicant
+  sends to 127.0.0.1:port. UDP and UNIX transports have identical
+  semantics (local, unreliable datagrams); UNIX sockets additionally
+  allow deterministic detection of a vanished peer.
+- scan_time=&lt;ms&gt; (default 200), auth_timeout=&lt;ms&gt; (2000),
+  assoc_timeout=&lt;ms&gt; (2000), keepalive=&lt;ms&gt; (1000): timers for
+  scan completion, authentication/association timeouts, and the liveness
+  probe used to detect a vanished AP.
+- phy=ht,vht,he,eht|all|none: which synthetic HT/VHT/HE/EHT capability
+  elements the station includes when the AP advertises the corresponding
+  operation elements (default all).
+- mlo=0|1: report WPA_DRIVER_FLAGS2_MLO (default 1 when CONFIG_IEEE80211BE
+  is enabled).
+
+The interface names (hostapd interface=, %wpa_supplicant -i) can be chosen
+freely; they do not need to exist. The MAC address is derived
+deterministically from the interface name unless hostapd bssid= is set.
+
+\subsection driver_test_example Example: WPA2-PSK
+
+hostapd configuration (psk-test.conf):
+
+\verbatim
+driver=test
+interface=ap1
+driver_params=test_socket=/tmp/test/ap1
+ctrl_interface=/tmp/test/hostapd-ctrl
+ssid=jkm-test-psk
+hw_mode=g
+channel=1
+ieee80211n=1
+wpa=2
+wpa_key_mgmt=WPA-PSK
+rsn_pairwise=CCMP
+wpa_passphrase=12345678
+\endverbatim
+
+%wpa_supplicant configuration (psk-test.conf):
+
+\verbatim
+ctrl_interface=/tmp/test/wpas-ctrl
+driver_param=test_socket=/tmp/test/ap1
+network={
+    ssid="jkm-test-psk"
+    key_mgmt=WPA-PSK
+    psk="12345678"
+}
+\endverbatim
+
+\verbatim
+mkdir -p /tmp/test
+hostapd psk-test.conf &
+wpa_supplicant -Dtest -ista1 -c psk-test.conf
+\endverbatim
+
+%wpa_supplicant prints:
+
+\verbatim
+sta1: SME: Trying to authenticate with 02:83:16:8a:24:7e (SSID='jkm-test-psk' freq=2412 MHz)
+sta1: Trying to associate with 02:83:16:8a:24:7e (SSID='jkm-test-psk' freq=2412 MHz)
+sta1: Associated with 02:83:16:8a:24:7e
+sta1: WPA: Key negotiation completed with 02:83:16:8a:24:7e [PTK=CCMP GTK=CCMP]
+sta1: CTRL-EVENT-CONNECTED - Connection to 02:83:16:8a:24:7e completed [id=0 id_str=]
+\endverbatim
+
+Multiple stations can be started as separate processes or with the -N
+option (e.g., -ista1 -N -Dtest -ista2). Multiple BSSes (bss= blocks) and
+AP MLD links (mld_ap=1 with the same interface= name in separate
+configuration files) share the radio socket of the first BSS.
+
+\subsection driver_test_limits Limitations
+
+The test driver exercises protocol and state machine behavior only. It does
+not emulate radio scheduling, channel widths, PHY rate negotiation,
+puncturing, spatial streams, airtime, beacon transmission, channel
+switching countdowns, DFS/CAC, regulatory enforcement, EML operating
+modes, TID-to-link mapping negotiation, over-the-air behavior, or
+encryption. Frequencies reported to the higher layers are the configured
+values; scan results use a constant synthetic signal level. There is no
+data path (no Data frames, DHCP, or IP connectivity), no TDLS, no mesh or
+IBSS, no AP mode in %wpa_supplicant, and no P2P group operation. Reported
+hardware capabilities (channels, HT/VHT/HE/EHT capabilities) are static
+synthetic values chosen to exercise configuration and element paths.
 
 \section unit_tests Unit tests
 
