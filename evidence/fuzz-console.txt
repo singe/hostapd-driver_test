@@ -1,0 +1,28 @@
+driver-test fuzz: seed=7 iterations=400 ap=/tmp/driver-test-run/fuzz-open/ap1 sta=/tmp/driver-test-run/fuzz-open/STA-sta1
+[AP] baseline liveness: sent=1 alive=True
+[AP] hand-crafted malformed corpus (56 cases): sent=58 alive=True
+[AP] random bit flips (400 datagrams): sent=459 alive=True
+[AP] random length/garbage datagrams (400): sent=860 alive=True
+[AP] duplicate frames (50x same seq): sent=911 alive=True
+[AP] peer table flood (300 distinct STA addresses): sent=1212 alive=True
+[AP] out-of-order MLME/EAPOL sequence (13 frames): sent=1227 alive=True
+[STA] STA-directed corpus (56 + 6 cases): sent=1368 alive=True
+[STA] random bit flips (400 datagrams): sent=1768 alive=True
+[STA] random length/garbage datagrams (400): sent=2168 alive=True
+[STA] duplicate frames (50x same seq): sent=2218 alive=True
+summary: datagrams_sent=2218 send_errors=0 checks=11 all_alive=True
+[fuzz-open] PASS (fuzz_rc=0 sta_exit=0 ap_exit=0)
+driver-test fuzz: seed=7 iterations=300 ap=/tmp/driver-test-run/fuzz-mld/ap1 sta=/tmp/driver-test-run/fuzz-mld/STA-sta1
+[AP] baseline liveness: sent=1 alive=True
+[AP] hand-crafted malformed corpus (56 cases): sent=58 alive=True
+[AP] random bit flips (300 datagrams): sent=359 alive=True
+[AP] random length/garbage datagrams (300): sent=660 alive=True
+[AP] duplicate frames (50x same seq): sent=711 alive=True
+[AP] peer table flood (300 distinct STA addresses): sent=1012 alive=True
+[AP] out-of-order MLME/EAPOL sequence (13 frames): sent=1027 alive=True
+[STA] STA-directed corpus (56 + 6 cases): sent=1168 alive=True
+[STA] random bit flips (300 datagrams): sent=1468 alive=True
+[STA] random length/garbage datagrams (300): sent=1768 alive=True
+[STA] duplicate frames (50x same seq): sent=1818 alive=True
+summary: datagrams_sent=1818 send_errors=0 checks=11 all_alive=True
+[fuzz-mld] PASS (fuzz_rc=0 sta_exit=0 ap_exit=0)

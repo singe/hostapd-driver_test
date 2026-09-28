@@ -1,0 +1,12 @@
+[open] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[wpa2-psk] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[wpa3-sae] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[ft-psk] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[mld] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[udp-transport] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+--- valgrind findings in open:
+--- valgrind findings in wpa2-psk:
+--- valgrind findings in wpa3-sae:
+--- valgrind findings in ft-psk:
+--- valgrind findings in mld:
+--- valgrind findings in udp-transport:

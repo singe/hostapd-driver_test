@@ -6,6 +6,14 @@ wpaspy/build
 **/parallel-vm.log
 tags
 build/
+# Local driver-test execution artifacts
+pocs/driver-test-run/
+pocs/evidence/
+evidence/normal-*/
+evidence/asan-*/
+evidence/debug-*/
+evidence/valgrind-*/
+*.log
 # clangd commands and cache
 compile_commands.json
 .cache

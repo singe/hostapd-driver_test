@@ -1,0 +1,7 @@
+[open] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[wpa2-psk] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[wpa3-sae] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[mld] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[ft-psk] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+[fils] PASS (sta_exit=0 ap_exit=0 expect='CTRL-EVENT-CONNECTED')
+==== debug build subset: 6 passed, 0 failed ====

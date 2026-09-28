@@ -1,0 +1,110 @@
+==== normal build ====
+FOUND    open             Open System authentication response
+FOUND    open             CTRL-EVENT-CONNECTED
+FOUND    open             hostapd AP-STA-CONNECTED
+FOUND    open             EVENT_RX_MGMT delivered to hostapd MLME
+FOUND    open             asynchronous EVENT_TX_STATUS
+FOUND    wpa2-psk         4-way handshake msg 1/4 (EAPOL over control port)
+FOUND    wpa2-psk         4-way handshake msg 3/4
+FOUND    wpa2-psk         PTK/GTK installed
+FOUND    wpa2-psk         group key handshake (GTK rekey)
+FOUND    wpa2-psk         PTK rekey timer (wpa_ptk_rekey)
+FOUND    wpa2-psk         hostapd received 4/4
+FOUND    wpa2-psk         HT capabilities parsed by hostapd
+FOUND    wpa3-sae         SAE H2E commit accepted
+FOUND    wpa3-sae         SAE confirm
+FOUND    wpa3-sae         BIGTK / beacon protection (BIGTK keyid 6/7 installed)
+FOUND    wpa3-sae         hostapd SAE state machine
+FOUND    owe              OWE DH group 19
+FOUND    owe              OWE connected
+FOUND    wpa2-eap         EAP success (PEAP/MSCHAPv2, integrated server)
+FOUND    wpa2-eap         hostapd EAP-PEAP server
+FOUND    wpa2-eap         EAP started / re-authentication
+FOUND    wpa2-eap-radius  RADIUS exchange with external server
+FOUND    wpa2-eap-radius  EAP-TTLS via RADIUS
+FOUND    wpa3-enterprise  WPA3-Enterprise 192-bit
+FOUND    wpa3-enterprise  Suite B connected
+FOUND    ft-psk           FT over-the-air reassociation
+FOUND    ft-psk           FT over-the-DS Action Response
+FOUND    ft-psk           RRB PMK-R1 pull/push between BSSes in-process
+FOUND    fils             FILS authentication + AES-SIV association
+FOUND    fils             driver AES-SIV encryption of assoc request
+FOUND    fils             driver AES-SIV decryption of assoc response
+FOUND    fils             ERP EAP-Initiate/Re-auth via RADIUS
+FOUND    5ghz-vht-he      STA flags [HT][VHT][HE] on 5 GHz
+FOUND    5ghz-vht-he      HT40 OBSS scan path
+FOUND    6ghz-he-eht      STA flags [HE][EHT][6GHZ]
+FOUND    eht-2g           STA flags [HT][HE][EHT] on 2.4 GHz
+FOUND    mld              two-link MLO association accepted
+FOUND    mld              MLO Link KDE in 4-way handshake
+FOUND    mld              per-link IGTK
+FOUND    mld              connected to AP MLD
+FOUND    mld              hostapd accepted link 1
+FOUND    mld              driver link_add for link 1
+FOUND    mld-single-link  single-link MLO
+FOUND    ap-deauth        AP-initiated deauthentication received
+FOUND    ap-disassoc      AP-initiated disassociation (PMF)
+FOUND    two-stas         second concurrent STA connected
+FOUND    wrong-psk        wrong PSK rejected
+FOUND    wrong-sae        wrong SAE password rejected
+FOUND    auth-timeout     authentication timeout
+FOUND    assoc-timeout    association timeout
+FOUND    udp-transport    UDP loopback transport
+FOUND    test-dir         directory discovery mode
+FOUND    ap-loss          peer disappearance detected
+53/53 coverage markers found
+==== asan build ====
+FOUND    open             Open System authentication response
+FOUND    open             CTRL-EVENT-CONNECTED
+FOUND    open             hostapd AP-STA-CONNECTED
+FOUND    open             EVENT_RX_MGMT delivered to hostapd MLME
+FOUND    open             asynchronous EVENT_TX_STATUS
+FOUND    wpa2-psk         4-way handshake msg 1/4 (EAPOL over control port)
+FOUND    wpa2-psk         4-way handshake msg 3/4
+FOUND    wpa2-psk         PTK/GTK installed
+FOUND    wpa2-psk         group key handshake (GTK rekey)
+FOUND    wpa2-psk         PTK rekey timer (wpa_ptk_rekey)
+FOUND    wpa2-psk         hostapd received 4/4
+FOUND    wpa2-psk         HT capabilities parsed by hostapd
+FOUND    wpa3-sae         SAE H2E commit accepted
+FOUND    wpa3-sae         SAE confirm
+FOUND    wpa3-sae         BIGTK / beacon protection (BIGTK keyid 6/7 installed)
+FOUND    wpa3-sae         hostapd SAE state machine
+FOUND    owe              OWE DH group 19
+FOUND    owe              OWE connected
+FOUND    wpa2-eap         EAP success (PEAP/MSCHAPv2, integrated server)
+FOUND    wpa2-eap         hostapd EAP-PEAP server
+FOUND    wpa2-eap         EAP started / re-authentication
+FOUND    wpa2-eap-radius  RADIUS exchange with external server
+FOUND    wpa2-eap-radius  EAP-TTLS via RADIUS
+FOUND    wpa3-enterprise  WPA3-Enterprise 192-bit
+FOUND    wpa3-enterprise  Suite B connected
+FOUND    ft-psk           FT over-the-air reassociation
+FOUND    ft-psk           FT over-the-DS Action Response
+FOUND    ft-psk           RRB PMK-R1 pull/push between BSSes in-process
+FOUND    fils             FILS authentication + AES-SIV association
+FOUND    fils             driver AES-SIV encryption of assoc request
+FOUND    fils             driver AES-SIV decryption of assoc response
+FOUND    fils             ERP EAP-Initiate/Re-auth via RADIUS
+FOUND    5ghz-vht-he      STA flags [HT][VHT][HE] on 5 GHz
+FOUND    5ghz-vht-he      HT40 OBSS scan path
+FOUND    6ghz-he-eht      STA flags [HE][EHT][6GHZ]
+FOUND    eht-2g           STA flags [HT][HE][EHT] on 2.4 GHz
+FOUND    mld              two-link MLO association accepted
+FOUND    mld              MLO Link KDE in 4-way handshake
+FOUND    mld              per-link IGTK
+FOUND    mld              connected to AP MLD
+FOUND    mld              hostapd accepted link 1
+FOUND    mld              driver link_add for link 1
+FOUND    mld-single-link  single-link MLO
+FOUND    ap-deauth        AP-initiated deauthentication received
+FOUND    ap-disassoc      AP-initiated disassociation (PMF)
+FOUND    two-stas         second concurrent STA connected
+FOUND    wrong-psk        wrong PSK rejected
+FOUND    wrong-sae        wrong SAE password rejected
+FOUND    auth-timeout     authentication timeout
+FOUND    assoc-timeout    association timeout
+FOUND    udp-transport    UDP loopback transport
+FOUND    test-dir         directory discovery mode
+FOUND    ap-loss          peer disappearance detected
+53/53 coverage markers found
