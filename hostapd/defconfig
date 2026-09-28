@@ -41,6 +41,11 @@ CONFIG_LIBNL32=y
 # Driver interface for no driver (e.g., RADIUS server only)
 #CONFIG_DRIVER_NONE=y
 
+# Driver interface for development testing without WLAN hardware or kernel
+# support (driver=test with driver_params=test_socket=<path>); see
+# doc/testing_tools.doxygen for details. Not for production use.
+#CONFIG_DRIVER_TEST=y
+
 # WPA2/IEEE 802.11i RSN pre-authentication
 CONFIG_RSN_PREAUTH=y
 

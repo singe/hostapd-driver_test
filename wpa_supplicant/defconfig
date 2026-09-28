@@ -85,6 +85,11 @@ CONFIG_DRIVER_MACSEC_LINUX=y
 # Driver interface for no driver (e.g., WPS ER only)
 #CONFIG_DRIVER_NONE=y
 
+# Driver interface for development testing without WLAN hardware or kernel
+# support (-Dtest with driver_param=test_socket=<path>); see
+# doc/testing_tools.doxygen for details. Not for production use.
+#CONFIG_DRIVER_TEST=y
+
 # Solaris libraries
 #LIBS += -lsocket -ldlpi -lnsl
 #LIBS_c += -lsocket

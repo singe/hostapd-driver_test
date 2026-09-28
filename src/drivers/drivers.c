@@ -40,6 +40,9 @@ const struct wpa_driver_ops *const wpa_drivers[] =
 #ifdef CONFIG_DRIVER_ROBOSWITCH
 	&wpa_driver_roboswitch_ops,
 #endif /* CONFIG_DRIVER_ROBOSWITCH */
+#ifdef CONFIG_DRIVER_TEST
+	&wpa_driver_test_ops,
+#endif /* CONFIG_DRIVER_TEST */
 #ifdef CONFIG_DRIVER_NONE
 	&wpa_driver_none_ops,
 #endif /* CONFIG_DRIVER_NONE */
