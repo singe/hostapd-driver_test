@@ -4,7 +4,15 @@ set -euo pipefail
 HERE=$(cd "$(dirname "$0")/.." && pwd)
 cd "$HERE"
 
-BASE=${UPSTREAM_BASE:-$(git rev-parse --verify upstream/2_12 2>/dev/null || git rev-parse --verify hostap_2_12)}
+if [ -n "${UPSTREAM_BASE:-}" ]; then
+	BASE=$UPSTREAM_BASE
+elif git rev-parse --verify upstream/2_12 >/dev/null 2>&1; then
+	BASE=$(git rev-parse upstream/2_12)
+elif git rev-parse --verify hostap_2_12 >/dev/null 2>&1; then
+	BASE=$(git rev-parse hostap_2_12)
+else
+	BASE=$(git rev-parse HEAD^)
+fi
 
 git diff --check "$BASE" HEAD -- ':(exclude)dist/*.patch'
 bash -n pocs/*.sh
