@@ -1,0 +1,35 @@
+name: driver-test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Install build dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libssl-dev pkg-config python3
+      - name: Build hostapd and wpa_supplicant
+        run: |
+          cp tests/build/build-hostapd-driver-test.config hostapd/.config
+          cp tests/build/build-wpa_supplicant-driver-test.config wpa_supplicant/.config
+          make -C hostapd -j2
+          make -C wpa_supplicant -j2
+      - name: Run unit tests
+        run: |
+          make -C tests -j2
+          make -C tests run-tests
+      - name: Run socket-driver smoke tests
+        env:
+          HOSTAP_SRC: ${{ github.workspace }}
+        run: |
+          pocs/driver-test-wpa2-wpa3.sh --only open
+          pocs/driver-test-wpa2-wpa3.sh --only wpa3-sae
+      - name: Check release scripts
+        run: scripts/check-release.sh
